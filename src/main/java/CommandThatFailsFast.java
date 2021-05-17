@@ -15,6 +15,7 @@ public class CommandThatFailsFast extends HystrixCommand<String> {
 
     @Override
     protected String run() {
+        System.out.print("In Run() : ");
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {
@@ -25,15 +26,22 @@ public class CommandThatFailsFast extends HystrixCommand<String> {
         return test;
     }
 
+    @Override
+    protected String getFallback() {
+        System.out.print("In Fallback() : ");
+        return "";
+    }
+
     public static void main(String args[]){
         for(int i=0;i<100;i++) {
             CommandThatFailsFast test = new CommandThatFailsFast(false);
+            String val = null;
             try {
-                test.execute();
+                val = test.execute();
             }catch(Exception  e){
 
             }
-            System.out.println(i + "  " + test.isCircuitBreakerOpen());
+            System.out.println("Run: " + i + "  isCircuitOpen: " + test.isCircuitBreakerOpen());
         }
     }
 }
